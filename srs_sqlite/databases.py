@@ -1,7 +1,10 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import dateutil.parser
+from IPython.display import IFrame
+import os
 
 from . import db
+from .srs import SRS
 
 
 class SrsRecord(db.Model):
@@ -9,17 +12,55 @@ class SrsRecord(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, nullable=False, unique=True, autoincrement=True)
 
-    front = db.Column(db.String(250), nullable=False, unique=True)
-    back = db.Column(db.String(10000))
+    front = db.Column(db.String, nullable=False, unique=True)
+    back = db.Column(db.String)
 
-    keywords = db.Column(db.String(250))
-    tags = db.Column(db.String(250))
+    data = db.Column(db.String)
+
+    keywords = db.Column(db.String)
+    tags = db.Column(db.String)
 
     created = db.Column(db.DateTime, default=datetime.now)
     modified = db.Column(db.DateTime, default=datetime.now)
 
     srs_level = db.Column(db.Integer)
     next_review = db.Column(db.DateTime)
+
+    def hide(self):
+        return IFrame('http://{}:{}/card/{}'.format(os.getenv('HOST', 'localhost'),
+                                                    os.getenv('PORT', 8000),
+                                                    self.id),
+                      width=800, height=100)
+
+    def show(self):
+        return IFrame('http://{}:{}/card/{}/show'.format(os.getenv('HOST', 'localhost'),
+                                                         os.getenv('PORT', 8000),
+                                                         self.id),
+                      width=800, height=100)
+
+    def next_srs(self):
+        if not self.srs_level:
+            self.srs_level = 1
+        else:
+            self.srs_level = self.srs_level + 1
+
+        self.next_review = (datetime.now()
+                            + SRS.get(int(self.srs_level), timedelta(weeks=4)))
+        self.modified = datetime.now()
+
+    correct = right = next_srs
+
+    def previous_srs(self, duration=timedelta(hours=4)):
+        if self.srs_level and self.srs_level > 1:
+            self.srs_level = self.srs_level - 1
+
+        self.bury(duration)
+
+    incorrect = wrong = previous_srs
+
+    def bury(self, duration=timedelta(hours=4)):
+        self.next_review = datetime.now() + duration
+        self.modified = datetime.now()
 
 
 class SrsTuple:
@@ -50,3 +91,5 @@ class SrsTuple:
             setattr(self, field, value)
 
             yield field, value
+
+        yield 'data', srs_record.data

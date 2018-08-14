@@ -20,6 +20,9 @@ def load_srs(filename, host='localhost', port=8000, debug=False):
     if not os.path.exists(filename):
         db.create_all()
 
+    os.environ['HOST'] = host
+    os.environ['PORT'] = str(port)
+
     open_browser_tab('http://{}:{}'.format(host, port))
 
     app.run(

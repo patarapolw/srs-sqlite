@@ -273,7 +273,7 @@ version = "4.4.0"
 traitlets = "*"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "Load me later. A lazy loading plugin management system."
 name = "lml"
 optional = false
@@ -457,7 +457,7 @@ python-versions = "*"
 version = "0.6.0"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "A wrapper library that provides one API to read, manipulate and writedata in different excel formats"
 name = "pyexcel"
 optional = false
@@ -471,7 +471,7 @@ pyexcel-io = ">=0.5.6"
 texttable = ">=0.8.1"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "A python library to read and write structured data in csv, zipped csvformat and to/from databases"
 name = "pyexcel-io"
 optional = false
@@ -483,7 +483,7 @@ version = "0.5.7"
 lml = "0.0.1"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "A wrapper library to read, manipulate and write data in xls format. Itreads xlsx and xlsm format"
 name = "pyexcel-xls"
 optional = false
@@ -607,7 +607,7 @@ python-versions = "*"
 version = "0.3.1"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "module for creating simple ASCII tables"
 name = "texttable"
 optional = false
@@ -695,7 +695,7 @@ platform = "win32"
 python = "<3.6"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "Library for developers to extract data from Microsoft Excel (tm) spreadsheet files"
 name = "xlrd"
 optional = false
@@ -704,7 +704,7 @@ python-versions = "*"
 version = "1.1.0"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "Library to create spreadsheet files compatible with MS Excel 97/2000/XP/2003 XLS files, on any platform, with Python 2.6, 2.7, 3.3+"
 name = "xlwt"
 optional = false
@@ -713,7 +713,7 @@ python-versions = "*"
 version = "1.3.0"
 
 [metadata]
-content-hash = "d034787be32a2530535385c7e57a07dda684aa16a4d279781f6a486dbc6f4f13"
+content-hash = "1c99794de766369bdf541e5b73ec8e44feadf58c392c94ab4c9b599c06290f3a"
 platform = "*"
 python-versions = ">=3"
 

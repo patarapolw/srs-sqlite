@@ -37,8 +37,10 @@
 
   <script src="https://cdn.jsdelivr.net/npm/handsontable-pro/dist/handsontable.full.min.js"></script>
   <script src="https://cdn.rawgit.com/showdownjs/showdown/1.8.6/dist/showdown.min.js"></script>
+  <script src="{{ url_for('static', filename='vendor/sprintf/sprintf.min.js') }}"></script>
 
   <script>var config = {{ config|default({})|tojson }};</script>
+  <script src="{{ url_for('static', filename='converter.js') }}"></script>
   <script src="{{ url_for('static', filename='renderer.js') }}"></script>
   <script src="{{ url_for('static', filename='default.js') }}"></script>
   <script src="{{ url_for('static', filename='index.js') }}"></script>

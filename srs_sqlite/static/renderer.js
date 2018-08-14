@@ -1,13 +1,7 @@
-const markdownConverter = new showdown.Converter;
-const img_regex = /(?:(?=^)|(?=\s).|^)([^\s<>"\']+\.(?:png|jpg|jpeg|gif))/gi;
-
 (function(Handsontable){
   function customRenderer(hotInstance, td, row, column, prop, value, cellProperties) {
     let text = Handsontable.helper.stringify(value);
-    text = text.replace(/\n+/g, "\n\n");
-    text = text.replace(img_regex, "<img src='$1' width=200 />");
-
-    td.innerHTML = markdownConverter.makeHtml(text);
+    td.innerHTML = markdown2html(text, data[row]);
 
     return td;
   }
@@ -20,9 +14,7 @@ const img_regex = /(?:(?=^)|(?=\s).|^)([^\s<>"\']+\.(?:png|jpg|jpeg|gif))/gi;
 (function(Handsontable){
   function customRenderer(hotInstance, td, row, column, prop, value, cellProperties) {
     let text = Handsontable.helper.stringify(value);
-    text = text.replace(img_regex, "<img src='$1' width=200 />");
-
-    td.innerHTML = text;
+    td.innerHTML = imageUrl2html(text);
 
     return td;
   }

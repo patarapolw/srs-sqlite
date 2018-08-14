@@ -1,0 +1,10 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}"/>
+
+<div id="show-area"></div>
+
+<script src="https://cdn.rawgit.com/showdownjs/showdown/1.8.6/dist/showdown.min.js"></script>
+<script src="{{ url_for('static', filename='vendor/sprintf/sprintf.min.js') }}"></script>
+<script>var card = {{ card|tojson }}</script>
+<script>var show = {{ show|tojson }}</script>
+<script src="{{ url_for('static', filename='converter.js') }}"></script>
+<script src="{{ url_for('static', filename='card.js') }}"></script>

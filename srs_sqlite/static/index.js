@@ -149,6 +149,12 @@ function loadData() {
           return false;
         }
       }
+    },
+    afterBeginEditing: (row, column)=>{
+      if(data[row].data){
+        let itemData = JSON.parse(data[row].data);
+        console.log(itemData);
+      }
     }
   };
 

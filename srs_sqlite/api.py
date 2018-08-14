@@ -1,5 +1,6 @@
 from flask import request, jsonify, Response
 import math
+import json
 from datetime import datetime
 import sqlalchemy.exc
 
@@ -8,21 +9,58 @@ from .databases import SrsRecord, SrsTuple
 from .util import get_url_images_in_text
 
 
+# @app.route('/api/all/<page_number>')
+# def all_records(page_number, page_size=10):
+#     page_number = int(page_number)
+#
+#     query = SrsRecord.query.order_by(SrsRecord.modified.desc())
+#     total = query.count()
+#     if page_number < 0:
+#         page_number = math.ceil(total/page_size) + page_number + 1
+#
+#     offset = (page_number - 1) * page_size
+#
+#     records = query\
+#         .offset(offset)\
+#         .limit(page_size)\
+#         .all()
+#
+#     data = [dict(SrsTuple().from_db(record)) for record in records]
+#
+#     return jsonify({
+#         'data': data,
+#         'pages': {
+#             'from': offset + 1 if total > 0 else 0,
+#             'to': total if offset + page_size > total else offset + page_size,
+#             'number': page_number,
+#             'total': total
+#         }
+#     })
+
+
 @app.route('/api/all/<page_number>')
 def all_records(page_number, page_size=10):
+    def _filter():
+        for srs_record in SrsRecord.query.order_by(SrsRecord.modified.desc()):
+            record_data = srs_record.data
+            if record_data:
+                record_data = json.loads(record_data)
+                if record_data['level'] <= 10 and record_data['is_user'] == 1:
+                    yield srs_record
+            else:
+                yield srs_record
+
     page_number = int(page_number)
 
-    query = SrsRecord.query.order_by(SrsRecord.modified.desc())
-    total = query.count()
+    query = list(_filter())
+    total = len(query)
+
     if page_number < 0:
-        page_number = math.ceil(total/page_size) + page_number + 1
+        page_number = math.ceil(total / page_size) + page_number + 1
 
     offset = (page_number - 1) * page_size
 
-    records = query\
-        .offset(offset)\
-        .limit(page_size)\
-        .all()
+    records = query[offset:offset + page_size]
 
     data = [dict(SrsTuple().from_db(record)) for record in records]
 
