@@ -169,11 +169,15 @@ def create_image():
         filename = secure_filename(file.filename)
         while os.path.exists(os.path.join(Config.IMAGE_DATABASE_FOLDER, filename)):
             filename_stem, filename_ext = os.path.splitext(filename)
-            match_obj = re.search(r'(.*)(\d+)$',filename_stem)
+            match_obj = re.search(r'(.*\d{4}-\d{2}-\d{2}-)(\d+)$', filename_stem)
             if match_obj is not None:
                 filename = match_obj.group(1) + str(int(match_obj.group(2)) + 1) + filename_ext
             else:
-                filename = filename_stem + '0' + filename_ext
+                match_obj = re.search(r'.*\d{4}-\d{2}-\d{2}$', filename_stem)
+                if match_obj is not None:
+                    filename = filename_stem + '-0' + filename_ext
+                else:
+                    filename = filename_stem + datetime.now().isoformat()[:10] + filename_ext
 
         file.save(os.path.join(Config.IMAGE_DATABASE_FOLDER, filename))
 
@@ -181,9 +185,4 @@ def create_image():
             'filename': filename
         }), 201
 
-    # image.get('filename', uuid1().hex + '.png')
-    # with open(os.path.join(Config.IMAGE_DATABASE_FOLDER, filename), 'wb') as f:
-    #     f.write(b64decode(image['data']))
-    #
-    # return filename
     return Response(status=304)

@@ -251,33 +251,37 @@ function loadData() {
 }
 
 function sendChanges(changes, source){
-  if(source === 'edit' && changes[0][2] !== changes[0][3]){
-    const rowEdited = changes[0][0];
-    const fieldEdited = changes[0][1];
-    const newData = changes[0][3];
-    const recordId = data[rowEdited].id;
+  if(source === 'edit' || source === 'Autofill.fill'){
+    for(let change of changes){
+      if(change[2] !== change[3]){
+        const rowEdited = change[0];
+        const fieldEdited = change[1];
+        const newData = change[3];
+        const recordId = data[rowEdited].id;
 
-    const payload = {
-      id: recordId,
-      fieldName: fieldEdited,
-      data: newData
-    };
+        const payload = {
+          id: recordId,
+          fieldName: fieldEdited,
+          data: newData
+        };
 
-    fetch('/api/edit', {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json; charset=utf-8"
-      },
-      body: JSON.stringify(payload)
-    }).then(response=>{
-      if(response.status === 201){
-        response.json().then(responseJson=>{
-          data[rowEdited].id = responseJson.id;
-        });
-      } else {
-        alert('Not added. (Have you edited the "front"?)');
+        fetch('/api/edit', {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json; charset=utf-8"
+          },
+          body: JSON.stringify(payload)
+        }).then(response=>{
+          if(response.status === 201){
+            response.json().then(responseJson=>{
+              data[rowEdited].id = responseJson.id;
+            });
+          } else {
+            alert('Not added. (Have you edited the "front"?)');
+          }
+        }).catch(error => console.error(`Fetch Error =\n`, error));
       }
-    }).catch(error => console.error(`Fetch Error =\n`, error));
+    }
   }
 }
 
