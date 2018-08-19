@@ -36,7 +36,8 @@ You have to get the server running first. After that, in Jupyter Notebook:
 >>> os.environ['DATABASE_URI'] = 'srs.db'
 >>> from srs_sqlite.flashcards import iter_quiz
 >>> from srs_sqlite import db
->>> card = next(iter_quiz)
+>>> quiz = iter_quiz()
+>>> card = next(quiz)
 >>> card.hide()
 An HTML-rendered front of the card is shown.
 >>> card.show()
