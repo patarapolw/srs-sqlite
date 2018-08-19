@@ -169,15 +169,19 @@ def create_image():
         filename = secure_filename(file.filename)
         while os.path.exists(os.path.join(Config.IMAGE_DATABASE_FOLDER, filename)):
             filename_stem, filename_ext = os.path.splitext(filename)
-            match_obj = re.search(r'(.*\d{4}-\d{2}-\d{2}-)(\d+)$', filename_stem)
+            today_date = datetime.now().isoformat()[:10]
+
+            match_obj = re.search(f'(.*{today_date}-)(\d+)$', filename_stem)
             if match_obj is not None:
-                filename = match_obj.group(1) + str(int(match_obj.group(2)) + 1) + filename_ext
+                filename_stem = match_obj.group(1) + str(int(match_obj.group(2)) + 1)
             else:
-                match_obj = re.search(r'.*\d{4}-\d{2}-\d{2}$', filename_stem)
+                match_obj = re.search(f'.*{today_date}$', filename_stem)
                 if match_obj is not None:
-                    filename = filename_stem + '-0' + filename_ext
+                    filename_stem = filename_stem + '-0'
                 else:
-                    filename = filename_stem + datetime.now().isoformat()[:10] + filename_ext
+                    filename_stem = filename_stem + today_date
+
+            filename = filename_stem + filename_ext
 
         file.save(os.path.join(Config.IMAGE_DATABASE_FOLDER, filename))
 
