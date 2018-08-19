@@ -1,7 +1,8 @@
-from flask import render_template, request
+from flask import render_template, send_from_directory
+
 import os
 
-from . import app
+from . import app, Config
 from .databases import SrsRecord, SrsTuple
 
 
@@ -13,7 +14,7 @@ def index():
             'front': 'markdownRenderer',
             'back': 'markdownRenderer'
         },
-        'colWidths': [210, 381, 179, 155, 85, 220]
+        'colWidths': [210, 575, 179, 155, 85, 220]
     }
 
     return render_template('index.html', title=os.getenv('DATABASE_URI', ''), config=config)
@@ -29,3 +30,8 @@ def card(card_id):
 def card_show(card_id):
     record = SrsRecord.query.filter_by(id=card_id).first()
     return render_template('card.html', card=dict(SrsTuple().from_db(record)), show=True)
+
+
+@app.route('/images/<filename>')
+def get_image(filename):
+    return send_from_directory(Config.IMAGE_DATABASE_FOLDER, filename)

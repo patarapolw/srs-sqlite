@@ -5,5 +5,6 @@ let defaultConfig = {
   maxColWidth: 500,
   contextMenu: true,
   undo: true,
+  copyPaste: true,
   autoWrapCol: false
 };

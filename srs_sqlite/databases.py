@@ -5,6 +5,7 @@ import os
 
 from . import db
 from .srs import SRS
+from .tags import tag_reader, to_raw_tags
 
 
 class SrsRecord(db.Model):
@@ -61,6 +62,23 @@ class SrsRecord(db.Model):
     def bury(self, duration=timedelta(hours=4)):
         self.next_review = datetime.now() + duration
         self.modified = datetime.now()
+
+    def mark(self, tag_name: str='marked'):
+        if self.tags is None:
+            self.tags = ''
+
+        all_tags = tag_reader(self.tags)
+        all_tags.add(tag_name)
+        self.tags = to_raw_tags(all_tags)
+
+    def unmark(self, tag_name: str='marked'):
+        if self.tags is None:
+            self.tags = ''
+
+        all_tags = tag_reader(self.tags)
+        if tag_name in all_tags:
+            all_tags.remove(tag_name)
+        self.tags = to_raw_tags(all_tags)
 
 
 class SrsTuple:

@@ -1,10 +1,13 @@
-from flask import request, jsonify, Response
+from flask import request, jsonify, Response, send_from_directory
+from werkzeug.utils import secure_filename
+
 import math
-import json
 from datetime import datetime
+import os
+import re
 import sqlalchemy.exc
 
-from . import app, db
+from . import app, db, Config
 from .databases import SrsRecord, SrsTuple
 from .util import get_url_images_in_text
 
@@ -42,12 +45,6 @@ from .util import get_url_images_in_text
 def all_records(page_number, page_size=10):
     def _filter():
         for srs_record in SrsRecord.query.order_by(SrsRecord.modified.desc()):
-            record_data = srs_record.data
-            if record_data:
-                record_data = json.loads(record_data)
-                if record_data['level'] <= 10 and record_data['is_user'] == 1:
-                    yield srs_record
-            else:
                 yield srs_record
 
     page_number = int(page_number)
@@ -160,3 +157,33 @@ def delete_record(record_id):
         'id': record_id,
         'front': front
     }), 303
+
+
+@app.route('/api/images/create', methods=['POST'])
+def create_image():
+    if not os.path.exists(Config.IMAGE_DATABASE_FOLDER):
+        os.mkdir(Config.IMAGE_DATABASE_FOLDER)
+
+    if 'file' in request.files:
+        file = request.files['file']
+        filename = secure_filename(file.filename)
+        while os.path.exists(os.path.join(Config.IMAGE_DATABASE_FOLDER, filename)):
+            filename_stem, filename_ext = os.path.splitext(filename)
+            match_obj = re.search(r'(.*)(\d+)$',filename_stem)
+            if match_obj is not None:
+                filename = match_obj.group(1) + str(int(match_obj.group(2)) + 1) + filename_ext
+            else:
+                filename = filename_stem + '0' + filename_ext
+
+        file.save(os.path.join(Config.IMAGE_DATABASE_FOLDER, filename))
+
+        return jsonify({
+            'filename': filename
+        }), 201
+
+    # image.get('filename', uuid1().hex + '.png')
+    # with open(os.path.join(Config.IMAGE_DATABASE_FOLDER, filename), 'wb') as f:
+    #     f.write(b64decode(image['data']))
+    #
+    # return filename
+    return Response(status=304)

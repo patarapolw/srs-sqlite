@@ -55,10 +55,10 @@ window.addEventListener('resize', ()=>{
 
 function fetchAll(){
   fetch('/api/all/' + pageNumber).then((response)=>{
-    response.json().then((response_json)=>{
-      data = response_json.data;
+    response.json().then((responseJson)=>{
+      data = responseJson.data;
       loadData();
-      setPageNav(response_json.pages);
+      setPageNav(responseJson.pages);
     });
   });
 }
@@ -76,10 +76,10 @@ function readSearchBarValue(queryString){
         q: queryString
       })
     }).then((response)=>{
-      response.json().then((response_json)=>{
-        data = response_json.data;
+      response.json().then((responseJson)=>{
+        data = responseJson.data;
         loadData();
-        setPageNav(response_json.pages);
+        setPageNav(responseJson.pages);
       });
     });
   }
@@ -138,8 +138,8 @@ function loadData() {
             method: 'DELETE'
           }).then(response=>{
             if(response.status === 303){
-              response.json().then(response_json=>{
-                alert('Removed ' + response_json.id +': ' + response_json.front);
+              response.json().then(responseJson=>{
+                alert('Removed ' + responseJson.id +': ' + responseJson.front);
               });
             } else {
               alert('Not removed from database (refresh to reload).');
@@ -154,6 +154,38 @@ function loadData() {
       if(data[row].data){
         let itemData = JSON.parse(data[row].data);
         console.log(itemData);
+      }
+    },
+    beforePaste: (data, coords)=>{
+      const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+      // console.log(items); // will give you the mime types
+      for (index in items) {
+        const item = items[index];
+        if (item.kind === 'file') {
+          const file = item.getAsFile();
+          console.log(file);
+          let reader = new FileReader();
+          reader.onload = function(event) {
+            const extension = file.type.match(/\/([a-z0-9]+)/i)[1].toLowerCase();
+
+            let formData = new FormData();
+            formData.append('file', file, file.name);
+            formData.append('extension', extension);
+            formData.append('mimetype', file.type);
+            formData.append('submission-type', 'paste');
+            fetch('/api/images/create', {
+              method: 'POST',
+              body: formData
+            }).then(response=>response.json())
+              .then(responseJson=>{
+                hot.setDataAtCell(coords[0].startRow, coords[0].startCol,
+                  '/images/' + responseJson.filename);
+              });
+          };
+          reader.readAsBinaryString(file);
+
+          return false;
+        }
       }
     }
   };
@@ -239,8 +271,8 @@ function sendChanges(changes, source){
       body: JSON.stringify(payload)
     }).then(response=>{
       if(response.status === 201){
-        response.json().then(response_json=>{
-          data[rowEdited].id = response_json.id;
+        response.json().then(responseJson=>{
+          data[rowEdited].id = responseJson.id;
         });
       } else {
         alert('Not added. (Have you edited the "front"?)');
