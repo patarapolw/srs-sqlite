@@ -61,6 +61,9 @@ def all_records(page_number, page_size=10):
 
     data = [dict(SrsTuple().from_db(record)) for record in records]
 
+    if len(data) == 0:
+        data = [dict(SrsTuple().from_db(None))]
+
     return jsonify({
         'data': data,
         'pages': {
@@ -106,6 +109,9 @@ def search(page_number, page_size=10):
 
     data = [dict(SrsTuple().from_db(record)) for record in records]
 
+    if len(data) == 0:
+        data = [dict(SrsTuple().from_db(None))]
+
     return jsonify({
         'data': data,
         'pages': {
@@ -134,7 +140,9 @@ def edit_record():
         except sqlalchemy.exc.IntegrityError:
             return Response(status=400)
     else:
-        setattr(old_record, record['fieldName'], record['data'])
+        setattr(old_record,
+                record['fieldName'],
+                SrsTuple.parse(record['fieldName'], record['data']))
         old_record.modified = datetime.now()
 
         db.session.commit()

@@ -10,7 +10,7 @@ from srs_sqlite import db
 from srs_sqlite.databases import SrsRecord
 from srs_sqlite.util import get_url_images_in_text
 
-engine = create_engine('sqlite:///' + os.path.abspath('../user/PathoDict.db'))
+engine = create_engine('sqlite:///' + os.path.abspath('../user/PathoKnowledge.db'))
 Base = declarative_base()
 Session = sessionmaker(bind=engine)
 

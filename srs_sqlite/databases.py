@@ -104,16 +104,23 @@ class SrsTuple:
         for key in self.__slots__:
             entry[key] = getattr(self, key, None)
 
-        if entry['next_review'] is not None:
-            entry['next_review'] = dateutil.parser.parse(entry['next_review'])
+            if entry[key] is not None:
+                self.parse(key, entry[key])
 
         return entry
 
+    @staticmethod
+    def parse(key, value):
+        if key == 'next_review':
+            return dateutil.parser.parse(value)
+        else:
+            return value
+
     def from_db(self, srs_record):
-        yield 'id', srs_record.id
+        yield 'id', getattr(srs_record, 'id', None)
 
         for field in self.__slots__:
-            value = getattr(srs_record, field)
+            value = getattr(srs_record, field, None)
             if isinstance(value, datetime):
                 value = value.isoformat()
 
@@ -121,4 +128,4 @@ class SrsTuple:
 
             yield field, value
 
-        yield 'data', srs_record.data
+        yield 'data', getattr(srs_record, 'data', None)
