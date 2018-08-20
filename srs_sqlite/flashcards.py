@@ -1,20 +1,34 @@
 import random
-import json
 from datetime import datetime
 
 from .databases import SrsRecord
+from .tags import tag_reader
 
 
-def iter_quiz():
+def iter_quiz(is_due=True, tag=None):
+    def _filter_is_due(srs_record):
+        if is_due is None:
+            return True
+        elif is_due is True:
+            if not srs_record.next_review or srs_record.next_review < datetime.now():
+                return True
+        else:
+            if srs_record.next_review is None:
+                return True
+        return False
+
+    def _filter_tag(srs_record):
+        if not tag:
+            return True
+        elif tag in tag_reader(srs_record.tags):
+            return True
+        else:
+            return False
+
     def _filter():
         for srs_record in SrsRecord.query.order_by(SrsRecord.modified.desc()):
-            # record_data = srs_record.data
-            # if record_data:
-            #     record_data = json.loads(record_data)
-            #     if (record_data['level'] <= 5 and record_data['is_user'] == 1 and
-            #             (not srs_record.next_review or srs_record.next_review < datetime.now())):
-            #         yield srs_record
-            # else:
+            if all((_filter_is_due(srs_record),
+                    _filter_tag(srs_record))):
                 yield srs_record
 
     all_records = list(_filter())

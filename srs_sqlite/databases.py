@@ -6,6 +6,7 @@ import os
 from . import db
 from .srs import SRS
 from .tags import tag_reader, to_raw_tags
+from .util import get_url_images_in_text
 
 
 class SrsRecord(db.Model):
@@ -28,16 +29,26 @@ class SrsRecord(db.Model):
     next_review = db.Column(db.DateTime)
 
     def hide(self):
+        if len(get_url_images_in_text(self.front)) > 0:
+            height = 500
+        else:
+            height = 100
+
         return IFrame('http://{}:{}/card/{}'.format(os.getenv('HOST', 'localhost'),
                                                     os.getenv('PORT', 8000),
                                                     self.id),
-                      width=800, height=100)
+                      width=800, height=height)
 
     def show(self):
+        if len(get_url_images_in_text(self.back)) > 0:
+            height = 500
+        else:
+            height = 200
+
         return IFrame('http://{}:{}/card/{}/show'.format(os.getenv('HOST', 'localhost'),
                                                          os.getenv('PORT', 8000),
                                                          self.id),
-                      width=800, height=100)
+                      width=800, height=height)
 
     def next_srs(self):
         if not self.srs_level:
@@ -51,7 +62,7 @@ class SrsRecord(db.Model):
 
     correct = right = next_srs
 
-    def previous_srs(self, duration=timedelta(hours=4)):
+    def previous_srs(self, duration=timedelta(minutes=1)):
         if self.srs_level and self.srs_level > 1:
             self.srs_level = self.srs_level - 1
 
@@ -59,7 +70,7 @@ class SrsRecord(db.Model):
 
     incorrect = wrong = previous_srs
 
-    def bury(self, duration=timedelta(hours=4)):
+    def bury(self, duration=timedelta(minutes=1)):
         self.next_review = datetime.now() + duration
         self.modified = datetime.now()
 

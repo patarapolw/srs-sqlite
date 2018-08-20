@@ -59,6 +59,7 @@ Commit changes.
 ## Screenshots
 
 <img src="https://raw.githubusercontent.com/patarapolw/srs-sqlite/master/screenshots/0.png" />
+<img src="https://raw.githubusercontent.com/patarapolw/srs-sqlite/master/screenshots/jupyter.png" />
 
 ## Related projects
 

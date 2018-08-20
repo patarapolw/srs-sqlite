@@ -75,3 +75,7 @@ td ul {
 td li {
   margin: -0.5em;
 }
+
+.imageViewer {
+  width: 200px;
+}
