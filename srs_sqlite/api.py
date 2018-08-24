@@ -1,4 +1,4 @@
-from flask import request, jsonify, Response, send_from_directory
+from flask import request, jsonify, Response
 from werkzeug.utils import secure_filename
 
 import math
@@ -6,10 +6,25 @@ from datetime import datetime
 import os
 import re
 import sqlalchemy.exc
+from sqlalchemy.sql import func, desc
 
 from . import app, db, Config
 from .databases import SrsRecord, SrsTuple
 from .util import get_url_images_in_text
+
+sort_by = {
+    'column': 'modified',
+    'desc': True
+}
+
+
+def get_ordering():
+    result = getattr(SrsRecord, sort_by['column'])
+
+    if sort_by['desc']:
+        return desc(func.lower(result))
+    else:
+        return func.lower(result)
 
 
 # @app.route('/api/all/<page_number>')
@@ -44,7 +59,7 @@ from .util import get_url_images_in_text
 @app.route('/api/all/<page_number>')
 def all_records(page_number, page_size=10):
     def _filter():
-        for srs_record in SrsRecord.query.order_by(SrsRecord.modified.desc()):
+        for srs_record in SrsRecord.query.order_by(get_ordering()):
                 yield srs_record
 
     page_number = int(page_number)
@@ -80,7 +95,7 @@ def search(page_number, page_size=10):
     def _search():
         query_string = request.get_json()['q'].lower()
 
-        for srs_record in SrsRecord.query.order_by(SrsRecord.modified.desc()):
+        for srs_record in SrsRecord.query.order_by(get_ordering()):
             front = srs_record.front
             if front:
                 for url in get_url_images_in_text(front):
@@ -198,3 +213,14 @@ def create_image():
         }), 201
 
     return Response(status=304)
+
+
+@app.route('/api/sort_by/<column>', methods=['POST'])
+def new_sort(column):
+    if column == sort_by['column']:
+        sort_by['desc'] = not sort_by['desc']
+    else:
+        sort_by['column'] = column
+        sort_by['desc'] = False
+
+    return Response(status=201)

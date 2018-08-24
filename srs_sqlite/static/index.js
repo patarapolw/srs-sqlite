@@ -156,6 +156,17 @@ function loadData() {
         console.log(itemData);
       }
     },
+    afterOnCellMouseDown: (event, coords, td)=>{
+      if(coords.row === -1){
+        fetch('/api/sort_by/' + td.textContent.trim(), {
+          method: 'POST',
+        }).then(response=>{
+          if(response.status === 201){
+            readSearchBarValue(document.getElementById('search-bar').value);
+          }
+        })
+      }
+    },
     beforePaste: (data, coords)=>{
       const items = (event.clipboardData || event.originalEvent.clipboardData).items;
       // console.log(items); // will give you the mime types
@@ -251,7 +262,8 @@ function loadData() {
 }
 
 function sendChanges(changes, source){
-  if(source === 'edit' || source === 'Autofill.fill'){
+  console.log(source);
+  if(['edit', 'Autofill.fill', 'CopyPaste.paste', 'CopyPaste.cut'].indexOf(source) !== -1){
     for(let change of changes){
       if(change[2] !== change[3]){
         const rowEdited = change[0];

@@ -6,6 +6,12 @@ from .tags import tag_reader
 
 
 def iter_quiz(is_due=True, tag=None):
+    """
+
+    :param bool|None is_due:
+    :param str|None tag:
+    :return:
+    """
     def _filter_is_due(srs_record):
         if is_due is None:
             return True
@@ -35,3 +41,7 @@ def iter_quiz(is_due=True, tag=None):
     random.shuffle(all_records)
 
     return iter(all_records)
+
+
+def iter_all():
+    return iter_quiz(is_due=None, tag=None)
