@@ -34,4 +34,9 @@ def card_show(card_id):
 
 @app.route('/images/<filename>')
 def get_image(filename):
-    return send_from_directory(Config.IMAGE_DATABASE_FOLDER, filename)
+    return send_from_directory(Config.DATABASE_FOLDER, filename)
+
+
+@app.route('/pdf/<filename>')
+def get_pdf(filename):
+    return send_from_directory(Config.DATABASE_FOLDER, filename)

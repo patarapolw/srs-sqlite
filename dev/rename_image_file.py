@@ -23,8 +23,8 @@ if __name__ == '__main__':
         old_path = srs_record.front
         srs_record.front = ''.join(groups)
         os.rename(
-            os.path.join(Config.IMAGE_DATABASE_FOLDER, os.path.split(old_path)[1]),
-            os.path.join(Config.IMAGE_DATABASE_FOLDER, os.path.split(srs_record.front)[1])
+            os.path.join(Config.DATABASE_FOLDER, os.path.split(old_path)[1]),
+            os.path.join(Config.DATABASE_FOLDER, os.path.split(srs_record.front)[1])
         )
 
     db.session.commit()

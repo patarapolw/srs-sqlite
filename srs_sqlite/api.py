@@ -184,13 +184,13 @@ def delete_record(record_id):
 
 @app.route('/api/images/create', methods=['POST'])
 def create_image():
-    if not os.path.exists(Config.IMAGE_DATABASE_FOLDER):
-        os.mkdir(Config.IMAGE_DATABASE_FOLDER)
+    if not os.path.exists(Config.DATABASE_FOLDER):
+        os.mkdir(Config.DATABASE_FOLDER)
 
     if 'file' in request.files:
         file = request.files['file']
         filename = secure_filename(file.filename)
-        while os.path.exists(os.path.join(Config.IMAGE_DATABASE_FOLDER, filename)):
+        while os.path.exists(os.path.join(Config.DATABASE_FOLDER, filename)):
             filename_stem, filename_ext = os.path.splitext(filename)
             today_date = datetime.now().isoformat()[:10]
 
@@ -206,7 +206,7 @@ def create_image():
 
             filename = filename_stem + filename_ext
 
-        file.save(os.path.join(Config.IMAGE_DATABASE_FOLDER, filename))
+        file.save(os.path.join(Config.DATABASE_FOLDER, filename))
 
         return jsonify({
             'filename': filename
