@@ -129,3 +129,19 @@ class SrsTuple:
             yield field, value
 
         yield 'data', getattr(srs_record, 'data', None)
+
+
+# class KeywordRecord(db.Model):
+#     __tablename__ = 'keyword'
+#
+#     id = db.Column(db.Integer, primary_key=True, nullable=False, unique=True, autoincrement=True)
+#     keyword = db.Column(db.String(collation='NOCASE'))
+#     srs_id = db.Column(db.Integer, db.ForeignKey('srs.id'))
+#
+#
+# class TagRecord(db.Model):
+#     ___tablename__ = 'tag'
+#
+#     id = db.Column(db.Integer, primary_key=True, nullable=False, unique=True, autoincrement=True)
+#     tag = db.Column(db.String(collation='NOCASE'), nullable=False)
+#     srs_id = db.Column(db.Integer, db.ForeignKey('srs.id'))

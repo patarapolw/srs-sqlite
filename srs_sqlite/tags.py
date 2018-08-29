@@ -11,6 +11,9 @@ def tag_reader(raw_tags: str):
     >>> tag_reader('“Frontotemporal dementia” TDP-43')
     {'Frontotemporal dementia', 'TDP-43'}
     """
+    if raw_tags is None:
+        raw_tags = ''
+
     output = set()
     tag = ''
     do_purge = True

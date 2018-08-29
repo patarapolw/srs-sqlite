@@ -5,18 +5,22 @@ from .databases import SrsRecord
 from .tags import tag_reader
 
 
-def iter_quiz(is_due=True, tag=None):
+def iter_quiz(is_due=True, tag=None,
+              offset=0, limit=None):
     """
 
     :param bool|None is_due:
     :param str|None tag:
+    :param int offset:
+    :param int|None limit:
     :return:
     """
+
     def _filter_is_due(srs_record):
         if is_due is None:
             return True
         elif is_due is True:
-            if not srs_record.next_review or srs_record.next_review < datetime.now():
+            if srs_record.next_review and srs_record.next_review < datetime.now():
                 return True
         else:
             if srs_record.next_review is None:
@@ -37,7 +41,17 @@ def iter_quiz(is_due=True, tag=None):
                     _filter_tag(srs_record))):
                 yield srs_record
 
-    all_records = list(_filter())
+    def _records():
+        for i, record in enumerate(_filter()):
+            if i < offset:
+                continue
+            elif limit:
+                if i >= offset + limit:
+                    break
+
+            yield record
+
+    all_records = list(_records())
     random.shuffle(all_records)
 
     return iter(all_records)
