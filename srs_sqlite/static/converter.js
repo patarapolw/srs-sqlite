@@ -16,7 +16,7 @@ const pdf_regex = /(\/pdf\/.+\.pdf)\/(\d+)/gi;
 let pdfCache = {};
 
 function markdown2html(text, card, scaling){
-  // scaling = scaling || 0.5;
+  scaling = scaling || 0.5;
 
   const pdfUrl = pdf_regex.exec(text);
   pdf_regex.lastIndex = 0;
@@ -48,17 +48,19 @@ function markdown2html(text, card, scaling){
 }
 
 async function renderPdf(pdfUrl, scaling){
-  if(pdfCache[pdfUrl[0]] === undefined){
-    pdfCache[pdfUrl[0]] = null;
+  if(pdfCache[pdfUrl[1]] === undefined){
+    console.log('getting', pdfUrl);
+
+    pdfCache[pdfUrl[1]] = null;
     pdfjsLib.getDocument(pdfUrl[1])
-      .then(pdf=> pdfCache[pdfUrl[0]] = pdf);
+      .then(pdf=> pdfCache[pdfUrl[1]] = pdf);
   }
 
-  while(pdfCache[pdfUrl[0]] === null){
+  while(pdfCache[pdfUrl[1]] === null){
     await sleep(100);
   }
 
-  pdfCache[pdfUrl[0]].getPage(parseInt(pdfUrl[2]))
+  pdfCache[pdfUrl[1]].getPage(parseInt(pdfUrl[2]))
     .then(page=>{
       let canvas = document.getElementById(pdfUrl[0].hashCode());
       let context = canvas.getContext('2d');
