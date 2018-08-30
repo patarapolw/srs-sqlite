@@ -6,7 +6,7 @@ from time import sleep
 
 
 def get_url_images_in_text(text):
-    return re.findall(r'((?:(?<=^)|(?<=\s))[^\s<>\"\']+\.(?:png|jpg|jpeg|gif))', text, flags=re.IGNORECASE)
+    return re.findall(r'((?:(?<=^)|(?<=\s))[^\s<>\"\']+\.(?:png|jpg|jpeg|gif|pdf))', text, flags=re.IGNORECASE)
 
 
 def compare_list_match_regex(subset, superset):
