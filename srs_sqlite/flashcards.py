@@ -42,7 +42,14 @@ def iter_quiz(is_due=True, tag=None,
                 yield srs_record
 
     def _records():
-        for i, record in enumerate(_filter()):
+        global offset
+
+        all_filter = _filter()
+        if offset == 'random':
+            all_filter = list(all_filter)
+            offset = random.randrange(len(all_filter))
+
+        for i, record in enumerate(all_filter):
             if i < offset:
                 continue
             elif limit:
