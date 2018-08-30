@@ -1,10 +1,11 @@
-from flask import request, jsonify, Response
+from flask import request, jsonify, Response, send_from_directory
 from werkzeug.utils import secure_filename
 
 import math
 from datetime import datetime
 import os
 import re
+import PyPDF2
 import sqlalchemy.exc
 from sqlalchemy.sql import func, desc
 
@@ -224,3 +225,25 @@ def new_sort(column):
         sort_by['desc'] = False
 
     return Response(status=201)
+
+
+@app.route('/images/<filename>')
+def get_image(filename):
+    return send_from_directory(Config.DATABASE_FOLDER, filename)
+
+
+@app.route('/pdf/<filename>')
+def get_pdf(filename):
+    return send_from_directory(Config.DATABASE_FOLDER, filename)
+
+
+@app.route('/pdf/<filename>/<int:page_number>')
+def get_pdf_page(filename, page_number):
+    with open(os.path.join(Config.DATABASE_FOLDER, filename), 'rb') as f:
+        reader = PyPDF2.PdfFileReader(f)
+        page = reader.getPage(page_number - 1)
+        text = page.extractText()
+
+    return jsonify({
+        'text': text
+    })

@@ -30,13 +30,3 @@ def card(card_id):
 def card_show(card_id):
     record = SrsRecord.query.filter_by(id=card_id).first()
     return render_template('card.html', card=dict(SrsTuple().from_db(record)), show=True)
-
-
-@app.route('/images/<filename>')
-def get_image(filename):
-    return send_from_directory(Config.DATABASE_FOLDER, filename)
-
-
-@app.route('/pdf/<filename>')
-def get_pdf(filename):
-    return send_from_directory(Config.DATABASE_FOLDER, filename)

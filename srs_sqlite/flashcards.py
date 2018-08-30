@@ -42,7 +42,7 @@ def iter_quiz(is_due=True, tag=None,
                 yield srs_record
 
     def _records():
-        global offset
+        nonlocal offset
 
         all_filter = _filter()
         if offset == 'random':
