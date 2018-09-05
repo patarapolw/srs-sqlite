@@ -30,10 +30,15 @@ def iter_quiz(is_due=True, tag=None,
     def _filter_tag(srs_record):
         if not tag:
             return True
-        elif tag in tag_reader(srs_record.tags):
-            return True
         else:
-            return False
+            if isinstance(tag, (list, tuple)):
+                tags = tag
+            else:
+                tags = [tag]
+            if all(x in tag_reader(srs_record.tags) for x in tags):
+                return True
+            else:
+                return False
 
     def _filter():
         for srs_record in SrsRecord.query.order_by(SrsRecord.modified.desc()):
@@ -42,14 +47,7 @@ def iter_quiz(is_due=True, tag=None,
                 yield srs_record
 
     def _records():
-        nonlocal offset
-
-        all_filter = _filter()
-        if offset == 'random':
-            all_filter = list(all_filter)
-            offset = random.randrange(len(all_filter))
-
-        for i, record in enumerate(all_filter):
+        for i, record in enumerate(_filter()):
             if i < offset:
                 continue
             elif limit:
@@ -58,10 +56,13 @@ def iter_quiz(is_due=True, tag=None,
 
             yield record
 
-    all_records = list(_records())
-    random.shuffle(all_records)
+    if offset == 'random':
+        return iter(random.choices(list(_filter()), k=limit))
+    else:
+        all_records = list(_records())
+        random.shuffle(all_records)
 
-    return iter(all_records)
+        return iter(all_records)
 
 
 def iter_all():

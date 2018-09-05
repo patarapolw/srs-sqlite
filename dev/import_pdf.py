@@ -17,15 +17,18 @@ def import_pdf(filename):
         topic = filename.replace('.pdf', '').lower()
 
         for i in range(2, num_pages+1, 2):
-            srs_record = SrsRecord()
-            srs_record.front = '/pdf/{}/{}'.format(filename, i)
-            srs_record.back = '/pdf/{}/{}'.format(filename, i+1)
+            front = '/pdf/{}/{}'.format(filename, i)
 
-            srs_record.tags = topic
-            db.session.add(srs_record)
+            if SrsRecord.query.filter_by(front=front).first() is None:
+                srs_record = SrsRecord()
+                srs_record.front = front
+                srs_record.back = '/pdf/{}/{}'.format(filename, i+1)
+
+                srs_record.tags = topic
+                db.session.add(srs_record)
 
     db.session.commit()
 
 
 if __name__ == '__main__':
-    import_pdf('Dissection.pdf')
+    import_pdf('Salivary.pdf')
